@@ -1,5 +1,14 @@
+# -*- coding: utf-8 -*-
+#
+# Basert på
+# https://github.com/marselester/json-log-formatter/blob/master/json_log_formatter/__init__.py
+# med lokale justeringer for å
+#  - logge levelname
+#  - logge socket-informasjon uten å krasje
+
 import logging
 from datetime import datetime
+from socket import socket
 
 import json
 
@@ -11,7 +20,7 @@ BUILTIN_ATTRS = {
     'exc_text',
     'filename',
     'funcName',
-    'levelname',
+#    'levelname',
     'levelno',
     'lineno',
     'module',
@@ -122,4 +131,6 @@ class JSONFormatter(logging.Formatter):
             attr = json_record[attr_name]
             if isinstance(attr, datetime):
                 json_record[attr_name] = attr.isoformat()
+            if isinstance(attr, socket):
+                json_record[attr_name] = str(attr)
         return json_record
