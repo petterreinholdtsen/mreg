@@ -1,4 +1,5 @@
 import functools
+import logging
 import re
 
 from django.conf import settings
@@ -15,6 +16,7 @@ from mreg.models import (Cname, ForwardZoneMember, Host, HostGroup, Ipaddress,
         Txt, Sshfp, Network, NetGroupRegexPermission)
 from rest_framework.exceptions import PermissionDenied
 
+logger = logging.getLogger("mreg")
 
 @receiver(populate_user)
 def populate_user_from_ldap(sender, signal, user=None, ldap_user=None, **kwargs):
@@ -160,6 +162,7 @@ def save_host_history_on_save(sender, instance, created, **kwargs):
                                    action='saved',
                                    timestamp=timezone.now())
     new_log_entry.save()
+    logger.info("saved host entry", extra=hostdata)
 
 
 @receiver(post_delete, sender=PtrOverride)
@@ -183,6 +186,7 @@ def save_host_history_on_delete(sender, instance, **kwargs):
                                    action='deleted',
                                    timestamp=timezone.now())
     new_log_entry.save()
+    logger.info("deleted host entry", extra=hostdata)
 
 
 @receiver(pre_save, sender=Host)
